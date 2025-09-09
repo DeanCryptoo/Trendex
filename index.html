@@ -10,144 +10,118 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=Chakra+Petch:wght@500;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0b0f15;             /* page background */
-    --bg-2:#0d121a;            /* panels backdrop base */
+    --bg:#0b0f15;
     --panel: hsla(220, 30%, 12%, .55);
-    --panel-strong: hsla(220, 32%, 12%, .85);
     --border: hsla(210, 80%, 65%, .15);
-    --text:#e9eef7;
-    --muted:#9fb0c7;
-    --accent:#ffd300;          /* Trendex yellow */
-    --accent-2:#00ffd1;        /* mint glow */
-    --danger:#ff5a7a;
-    --success:#23d18b;
+    --text:#e9eef7; --muted:#9fb0c7;
+    --accent:#ffd300; --accent-2:#00ffd1; --success:#23d18b;
     --shadow: 0 10px 30px rgba(0,0,0,.35), inset 0 0 0 1px var(--border);
-    --radius-xl:22px;
-    --radius-lg:16px;
+    --radius-xl:22px; --radius-lg:16px;
   }
-
   *{box-sizing:border-box}
   html,body{height:100%}
+
+  /* Base: solid bg; gradient is on body::before to avoid seams */
   body{
-    margin:0; font-family:"Space Grotesk", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:var(--text);
-    background: radial-gradient(1200px 800px at 20% -10%, #101827 0%, transparent 60%),
-                radial-gradient(1000px 700px at 110% 10%, #0e2330 0%, transparent 60%),
-                linear-gradient(160deg, #0a0f16 0%, #0a0f16 40%, #0c121a 100%);
+    margin:0;
+    font-family:"Space Grotesk", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    color:var(--text);
+    background:#0a0f16;
     overflow-x:hidden;
   }
+  /* One seamless gradient layer, fixed to viewport */
+  body::before{
+    content:"";
+    position:fixed; inset:0; z-index:-2;
+    background:
+      radial-gradient(1200px 800px at 20% -10%, #101827 0%, transparent 60%),
+      radial-gradient(1000px 700px at 110% 10%, #0e2330 0%, transparent 60%),
+      linear-gradient(160deg, #0a0f16 0%, #0a0f16 40%, #0c121a 100%);
+    background-repeat:no-repeat;
+    background-attachment:fixed;
+  }
 
-  /* --- particle canvas sits behind everything --- */
-  #bg-canvas{position:fixed; inset:0; z-index:-1;}
-
-  /* noise overlay for subtle texture */
+  #bg-canvas{position:fixed; inset:0; z-index:-1}
   .noise{pointer-events:none; position:fixed; inset:0; z-index:-1; opacity:.08;
     background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4"/></filter><rect width="160" height="160" filter="url(%23n)" opacity="0.6"/></svg>');
-    image-rendering:pixelated; mix-blend-mode:overlay;}
+    image-rendering:pixelated; mix-blend-mode:overlay}
 
   header{
     position:sticky; top:0; z-index:40; backdrop-filter:saturate(120%) blur(8px);
     background:linear-gradient(180deg, rgba(15,19,28,.75), rgba(15,19,28,.35));
-    border-bottom:1px solid var(--border);
+    border-bottom:1px solid var(--border)
   }
   .nav{max-width:1200px; margin:auto; padding:14px 20px; display:flex; align-items:center; gap:18px}
   .logo{display:flex; align-items:center; gap:14px; text-decoration:none}
   .logo-badge{
     width:38px; height:38px; border-radius:10px; display:grid; place-items:center; color:#000; font-weight:900;
     background:radial-gradient(120% 120% at 30% 30%, #fff59a 0%, #ffd300 35%, #e2b300 60%, #9a7a00 100%);
-    box-shadow:0 8px 20px rgba(255,211,0,.35), inset 0 0 12px rgba(255,255,255,.25);
+    box-shadow:0 8px 20px rgba(255,211,0,.35), inset 0 0 12px rgba(255,255,255,.25)
   }
-  .brand{font-family:"Chakra Petch"; letter-spacing:.5px; font-size:1.2rem; font-weight:700; color:var(--accent); text-shadow:0 0 18px rgba(255,211,0,.35)}
+  .brand{
+    font-family:"Chakra Petch"; letter-spacing:.5px; font-size:1.2rem; font-weight:700;
+    color:var(--accent); text-shadow:0 0 18px rgba(255,211,0,.35)
+  }
   .nav-spacer{flex:1}
-  .nav a.btn{padding:10px 16px; border-radius:12px; font-weight:600; text-decoration:none; color:#0d0f15; background:var(--accent);
-    box-shadow:0 10px 25px rgba(255,211,0,.33); border:1px solid rgba(255,255,255,.15)}
-  .nav a.link{color:var(--muted); text-decoration:none; font-weight:600; padding:8px 10px; border-radius:10px}
-  .nav a.link:hover{color:var(--text); background:hsla(210, 50%, 90%, .05)}
-
-  /* ticker */
-  .ticker{display:none; gap:14px; align-items:center; overflow:hidden; font-size:.9rem; color:#0b0f15; background:linear-gradient(90deg, var(--accent), #ffe359, var(--accent));
-    padding:6px 10px; border-bottom:1px solid rgba(255,255,255,.2)}
-  .ticker .marquee{white-space:nowrap; animation:marquee 28s linear infinite}
-  @keyframes marquee{ 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
 
   /* hero */
   .hero{max-width:1200px; margin:72px auto; padding:0 20px 40px; display:grid; grid-template-columns:1fr; gap:28px; justify-items:center}
-  @media (max-width:990px){ .hero{grid-template-columns:1fr; } }
-
-  .hero-card{ 
-    position:relative; border-radius:var(--radius-xl); padding:56px 44px; max-width:780px; margin:0 auto; isolation:isolate; isolation:isolate;
+  .hero-card{
+    position:relative; border-radius:var(--radius-xl); padding:56px 44px; max-width:780px; margin:0 auto; text-align:center;
     background:linear-gradient(120deg, hsla(210,40%,16%,.75), hsla(220,38%,12%,.35));
-    border:1px solid var(--border); box-shadow:var(--shadow);
-    overflow:hidden; min-height:360px; text-align:center;
+    border:1px solid var(--border); box-shadow:var(--shadow); overflow:hidden; min-height:360px
   }
-  .hero-card:before{content:""; position:absolute; inset:0; background:radial-gradient(600px 280px at 20% -30%, rgba(255,211,0,.18), transparent 60%),
-                                                      radial-gradient(680px 420px at 110% -40%, rgba(0,255,209,.18), transparent 50%);
-    z-index:-1}
+  .hero-card:before{
+    content:""; position:absolute; inset:0;
+    background:
+      radial-gradient(600px 280px at 20% -30%, rgba(255,211,0,.18), transparent 60%),
+      radial-gradient(680px 420px at 110% -40%, rgba(0,255,209,.18), transparent 50%);
+    z-index:-1
+  }
   .hero h1{
-    font-family:"Chakra Petch"; font-size:clamp(2rem, 4.6vw, 4rem); margin:2px 0 10px; line-height:1.05; letter-spacing:.3px;
-    background:linear-gradient(180deg, #fff, #d9e3f7 60%, #9fb0c7); -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    font-family:"Chakra Petch"; font-size:clamp(2rem, 4.6vw, 4rem);
+    margin:2px 0 10px; line-height:1.05; letter-spacing:.3px;
+    background:linear-gradient(180deg, #fff, #d9e3f7 60%, #9fb0c7);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
     text-shadow:0 0 20px rgba(255,255,255,.05)
   }
-  .hero .eyebrow{display:inline-flex; align-items:center; gap:10px; color:var(--muted); font-weight:600; letter-spacing:.2px}
-  .hero .eyebrow .dot{width:8px; height:8px; border-radius:50%; background:var(--success); box-shadow:0 0 12px var(--success)}
+  .tagline{margin:0 0 12px; color:var(--muted); font-weight:600}
   .hero p{color:var(--muted); font-size:1.06rem; max-width:64ch; margin:0 auto}
-  .cta-row{display:flex; flex-wrap:wrap; gap:12px; margin-top:18px}
-  .btn{
-    display:inline-flex; align-items:center; gap:10px; padding:12px 18px; border-radius:14px; font-weight:700; text-decoration:none; cursor:pointer;
-    transition:.2s transform ease, .2s box-shadow ease; border:1px solid rgba(255,255,255,.12)
-  }
+  .cta-row{display:flex; flex-wrap:wrap; gap:12px; margin-top:18px; justify-content:center}
+  .btn{display:inline-flex; align-items:center; gap:10px; padding:12px 18px; border-radius:14px; font-weight:700; text-decoration:none; cursor:pointer; transition:.2s transform ease, .2s box-shadow ease; border:1px solid rgba(255,255,255,.12)}
   .btn-lg{ padding:16px 28px; font-size:1.08rem; border-radius:999px }
   .btn-primary{ color:#0b0f15; background:linear-gradient(180deg, #ffe463, var(--accent)); box-shadow:0 16px 30px rgba(255,211,0,.35)}
-  .btn-ghost{ color:var(--text); background:hsla(210,50%,90%,.04); backdrop-filter: blur(6px) saturate(140%); }
+  .btn-ghost{ color:var(--text); background:hsla(210,50%,90%,.04); backdrop-filter: blur(6px) saturate(140%) }
   .btn:hover{ transform:translateY(-2px) }
+  .btn-animate{position:relative; isolation:isolate}
+  .btn-animate::after{content:""; position:absolute; inset:-2px; border-radius:inherit; box-shadow:0 0 0 0 rgba(255,211,0,.45); animation:pulse 2.4s ease-in-out infinite; z-index:-1}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,211,0,.45)}70%{box-shadow:0 0 0 16px rgba(255,211,0,0)}100%{box-shadow:0 0 0 0 rgba(255,211,0,0)}}
 
-  .floating-badges{display:flex; flex-wrap:wrap; gap:10px; margin-top:18px}
-  .badge{font-size:.85rem; color:#08111a; background:linear-gradient(180deg, #9fffe4, var(--accent-2));
-    padding:8px 12px; border-radius:999px; font-weight:800; letter-spacing:.3px; box-shadow:0 10px 20px rgba(0,255,209,.15)}
+  .glass{background:linear-gradient(180deg, hsla(210,40%,16%,.55), hsla(210,38%,10%,.35)); border:1px solid var(--border); border-radius:var(--radius-lg); padding:18px; box-shadow:var(--shadow); backdrop-filter: blur(10px) saturate(160%)}
 
-  .hero-side{
-    display:grid; gap:14px; align-content:start
-  }
-  .glass{
-    background:linear-gradient(180deg, hsla(210,40%,16%,.55), hsla(210,38%,10%,.35));
-    border:1px solid var(--border); border-radius:var(--radius-lg); padding:18px; box-shadow:var(--shadow);
-    backdrop-filter: blur(10px) saturate(160%);
-  }
-
-  .stat{display:grid; grid-template-columns:auto 1fr auto; gap:12px; align-items:center}
-  .stat .icon{width:42px;height:42px; display:grid; place-items:center; border-radius:12px; background:linear-gradient(180deg, #152130, #0b121b); border:1px solid var(--border)}
-  .stat h3{margin:0; font-size:1rem; color:var(--muted)}
-  .stat .num{font-weight:900; font-size:1.5rem}
-  .stat .change{font-weight:800; color:var(--success)}
-
-  /* stats row */
+  /* metrics */
   .metrics{max-width:1200px; margin:20px auto 20px; padding:0 20px; display:grid; grid-template-columns:repeat(2,1fr); gap:24px}
-  @media (max-width:1050px){ .metrics{grid-template-columns:repeat(2,1fr);} }
-  @media (max-width:560px){ .metrics{grid-template-columns:1fr;} }
-  .metric-card{ position:relative; overflow:hidden; }
+  @media (max-width:560px){ .metrics{grid-template-columns:1fr} }
+  .metric-card{ position:relative; overflow:hidden }
   .metric-card .title{color:var(--muted); font-weight:700; font-size:.9rem}
   .metric-card .value{font-size:2rem; font-weight:900; letter-spacing:.5px}
   .metric-card .tiny{font-size:.85rem; color:var(--muted)}
-
-  .shine{position:absolute; inset:-60% -20% auto -20%; height:160%; pointer-events:none; background:radial-gradient(closest-side, rgba(255,255,255,.08), transparent 70%);
-    transform:translateY(-40%) rotate(-8deg); animation:float 10s ease-in-out infinite alternate}
+  .shine{position:absolute; inset:-60% -20% auto -20%; height:160%; pointer-events:none; background:radial-gradient(closest-side, rgba(255,255,255,.08), transparent 70%); transform:translateY(-40%) rotate(-8deg); animation:float 10s ease-in-out infinite alternate}
   @keyframes float{from{transform:translateY(-40%) rotate(-8deg)} to{transform:translateY(0) rotate(6deg)}}
 
-  /* features */
+  /* generic sections */
   section{max-width:1200px; margin:100px auto; padding:0 20px}
   .section-title{display:flex; align-items:center; gap:12px; margin:12px 0 14px}
   .section-title h2{margin:0; font-family:"Chakra Petch"; letter-spacing:.4px}
   .section-title .bar{width:10px; height:22px; border-radius:6px; background:linear-gradient(180deg, #d9ffeb, var(--accent-2))}
 
   .grid-3{ display:grid; grid-template-columns:repeat(2, 1fr); gap:24px }
-  @media (max-width:980px){ .grid-3{ grid-template-columns:1fr 1fr } }
   @media (max-width:680px){ .grid-3{ grid-template-columns:1fr } }
-
   .feat h3{ margin:6px 0 6px }
   .feat p{ margin:0; color:var(--muted) }
-  .feat .chip{display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; font-size:.85rem; font-weight:800;
-    background:linear-gradient(180deg, #fff1a6, var(--accent)); color:#0b0f15; box-shadow:0 8px 20px rgba(255,211,0,.28)}
+  .feat .chip{display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; font-size:.85rem; font-weight:800; background:linear-gradient(180deg, #fff1a6, var(--accent)); color:#0b0f15; box-shadow:0 8px 20px rgba(255,211,0,.28)}
 
-  /* success gallery */
+  /* success */
   .gallery{ display:grid; grid-template-columns:repeat(3, 1fr); gap:16px }
   @media (max-width:980px){ .gallery{ grid-template-columns:1fr 1fr } }
   @media (max-width:680px){ .gallery{ grid-template-columns:1fr } }
@@ -155,6 +129,13 @@
   .case h4{margin:2px 0 6px}
   .case .roi{ font-weight:900 }
   .tag{ display:inline-flex; align-items:center; gap:6px; font-size:.8rem; padding:6px 10px; border-radius:999px; background:hsla(210, 50%, 90%, .06); border:1px solid var(--border); color:var(--muted) }
+
+  /* plays */
+  .plays{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px }
+  @media (max-width:980px){ .plays{ grid-template-columns:1fr 1fr } }
+  @media (max-width:680px){ .plays{ grid-template-columns:1fr } }
+  .play ul{ margin:8px 0 0; padding-left:18px; color:var(--muted) }
+  .play h4{ margin:6px 0 }
 
   /* pricing */
   .pricing{ display:grid; grid-template-columns:1fr 1fr; gap:18px }
@@ -164,64 +145,23 @@
   .price-card ul{ list-style:none; padding:0; margin:10px 0 0 }
   .price-card li{ margin:8px 0; display:flex; gap:10px; align-items:flex-start }
 
-  /* timeline */
-  .timeline{ position:relative; margin-left:8px }
-  .timeline:before{ content:""; position:absolute; left:10px; top:6px; bottom:6px; width:2px; background:linear-gradient(180deg, var(--accent-2), transparent) }
-  .t-item{ position:relative; margin:14px 0 14px 26px; padding:12px 14px; border-radius:14px; background:hsla(210, 50%, 90%, .04); border:1px solid var(--border) }
-  .t-item:before{ content:""; position:absolute; left:-22px; top:14px; width:12px; height:12px; border-radius:50%; background:var(--accent-2); box-shadow:0 0 0 4px rgba(0,255,209,.12)}
-
-  /* FAQ accordion */
+  /* faq */
   details{ border:1px solid var(--border); border-radius:14px; padding:14px 16px; background:hsla(210, 50%, 90%, .04) }
   details+details{ margin-top:10px }
   summary{ cursor:pointer; font-weight:700; list-style:none }
   summary::-webkit-details-marker{ display:none }
 
-  /* footer */
   footer{ max-width:1200px; margin:50px auto 60px; padding:0 20px; opacity:.9 }
   .footer-grid{ display:grid; grid-template-columns: 1.2fr .8fr .8fr; gap:18px }
   @media (max-width:920px){ .footer-grid{ grid-template-columns:1fr 1fr } }
   @media (max-width:560px){ .footer-grid{ grid-template-columns:1fr } }
   .muted{ color:var(--muted) }
   .copyright{ color:var(--muted); text-align:center; border-top:1px solid var(--border); padding-top:14px; margin-top:18px }
-
-  /* small utilities */
-  .row{display:flex; gap:10px; align-items:center}
-  .right{margin-left:auto}
-  .center{text-align:center}
-  .sm{font-size:.9rem}
-  .xs{font-size:.8rem}
-  .mt8{margin-top:8px}
-  .mt16{margin-top:16px}
-  .mt24{margin-top:24px}
-  .mt32{margin-top:32px}
-  .img-cover{position:absolute; inset:0; opacity:.06; background:radial-gradient(80% 60% at 100% 20%, #ffd300 0%, transparent 50%), radial-gradient(80% 60% at 0% 100%, #00ffd1 0%, transparent 55%)}
-
-  /* glass card hover */
-  .glass.hover{ transition: transform .25s ease, box-shadow .25s ease }
-  .glass.hover:hover{ transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,.35), inset 0 0 0 1px var(--border) }
-
-  /* responsive safe area for CTAs fixed on mobile */
-  .mobile-cta{ position:fixed; z-index:50; left:0; right:0; bottom:16px; display:none; justify-content:center }
-  .mobile-cta .wrap{ display:flex; gap:10px; padding:8px; border-radius:999px; background:#0a0f16cc; backdrop-filter:blur(8px); border:1px solid var(--border) }
-  @media (max-width:760px){ .mobile-cta{ display:flex } header{ backdrop-filter:none } }
-
-  a.telegram{ display:inline-flex; align-items:center; gap:10px }
-  a.telegram svg{ width:18px; height:18px }
-.section-alt{ background:linear-gradient(180deg, hsla(210,40%,16%,.40), hsla(210,38%,10%,.28)); border:1px solid var(--border); border-radius: var(--radius-xl); padding: 36px 20px; box-shadow: var(--shadow); }
-.tagline{margin:0 0 12px; color:var(--muted); font-weight:600; text-align:center}
-  .btn-animate{position:relative; isolation:isolate}
-  .btn-animate::after{content:""; position:absolute; inset:-2px; border-radius:inherit; box-shadow:0 0 0 0 rgba(255,211,0,.45); animation:pulse 2.4s ease-in-out infinite; z-index:-1}
-  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,211,0,.45)}70%{box-shadow:0 0 0 16px rgba(255,211,0,0)}100%{box-shadow:0 0 0 0 rgba(255,211,0,0)}}
-  .brand, .brand b{ color: var(--accent) !important; }
 </style>
 </head>
 <body>
   <canvas id="bg-canvas" aria-hidden="true"></canvas>
   <div class="noise" aria-hidden="true"></div>
-
-  <div class="ticker">
-    <div class="marquee">⚠️ Educational content only — Not financial advice. You keep custody of your funds. Past performance ≠ future results. • Join Free Telegram: t.me/trendex_free • Apply for Premium: t.me/trendex_premium • New: Live market rooms & on-chain scanners rolling out this month.  </div>
-  </div>
 
   <header>
     <nav class="nav">
@@ -237,26 +177,22 @@
   <main class="hero" id="top">
     <section class="hero-card glass">
       <div class="img-cover" aria-hidden="true"></div>
-      <p class="tagline">Real‑time research & signal alerts — you keep custody.</p>
+      <p class="tagline">Real-time research & signal alerts — you keep custody.</p>
       <h1>Trade with <span style="color:var(--accent); text-shadow:0 0 28px rgba(255,211,0,.35)">conviction</span>, not noise.</h1>
-      <p>Trendex delivers high‑conviction <b>Spot</b> & <b>Futures</b> signals, risk frameworks, and live sessions. You execute on your own account — we provide the edge.
-      </p>
-      <div class="cta-row" style="justify-content:center">
-        <a class="btn btn-primary btn-lg btn-animate telegram" href="https://t.me/trendex_premium" target="_blank" rel="noopener">Apply for Premium</a>
-        <a class="btn btn-ghost btn-lg btn-animate telegram" href="https://t.me/trendex_free" target="_blank" rel="noopener">Join Free Telegram</a>
+      <p>Trendex delivers high-conviction <b>Spot</b> & <b>Futures</b> signals, risk frameworks, and live sessions. You execute on your own account — we provide the edge.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary btn-lg btn-animate" href="https://t.me/trendexcryptocalls" target="_blank" rel="noopener">Apply for Premium</a>
+        <a class="btn btn-ghost btn-lg btn-animate" href="https://t.me/trendexcryptocalls" target="_blank" rel="noopener">Join Free Telegram</a>
       </div>
-      <!-- badges hidden for minimal hero -->
     </section>
-
-    <!-- hero-side removed for a calmer first impression -->
   </main>
 
-  <!-- METRICS STRIP -->
+  <!-- METRICS -->
   <section class="metrics">
     <div class="glass metric-card">
       <div class="shine"></div>
       <div class="title">Manual Analysis</div>
-      <div class="value">Human‑posted signals</div>
+      <div class="value">Human-posted signals</div>
       <div class="tiny">We research, then publish to Telegram</div>
     </div>
     <div class="glass metric-card">
@@ -279,231 +215,158 @@
     </div>
   </section>
 
+  <!-- LATEST PLAYS -->
+  <section id="plays">
+    <div class="section-title"><div class="bar"></div><h2>Latest Plays</h2></div>
+    <div class="plays">
+      <div class="glass play">
+        <div class="row"><span class="tag">SOL / USDT</span><span class="right tag">Analysis</span></div>
+        <h4>Channel watch — $214 key reclaim</h4>
+        <ul>
+          <li>Price broke above first resistance; next objective is a <b>clean break above $214</b>.</li>
+          <li>Below $214, price remains within a channel structure.</li>
+          <li><b>Micro support:</b> $189.68 – $197.57.</li>
+        </ul>
+      </div>
+      <div class="glass play">
+        <div class="row"><span class="tag">SUI / USDT</span><span class="right tag">Futures 10×</span></div>
+        <h4>Buy zone $3.39 — Long</h4>
+        <ul>
+          <li>Entry: <b>$3.39</b> buy zone</li>
+          <li>Leverage: <b>10×</b> (user-managed risk)</li>
+          <li>Targets: <b>TP1 $3.45</b>, <b>TP2 $3.51</b></li>
+        </ul>
+      </div>
+      <div class="glass play">
+        <div class="row"><span class="tag">SOL / USDT</span><span class="right tag">Futures 10× Cross</span></div>
+        <h4>Long plan — Buy zone $191–$194</h4>
+        <ul>
+          <li>Type: <b>Long</b> · Mode: <b>Cross</b> · Leverage: <b>10×</b></li>
+          <li>Buy Zone: <b>$191 – $194</b></li>
+          <li>Capital guidance: <b>$5k – $10k</b> (user discretion)</li>
+        </ul>
+      </div>
+    </div>
+    <div class="xs muted mt8">Educational examples only — not financial advice. Manage your own risk.</div>
+  </section>
+
   <!-- FEATURES -->
-  <section id="features" class="section-alt">
+  <section id="features">
     <div class="section-title"><div class="bar"></div><h2>What you get</h2></div>
     <div class="grid-3">
-      <div class="glass feat">
-        <span class="chip">SPOT CALLS</span>
-        <h3>High‑conviction spot entries</h3>
-        <p>Macro context + invalidation rules + target ladders. Clean levels you can execute from any exchange.</p>
-      </div>
-      <div class="glass feat">
-        <span class="chip">FUTURE CALLS</span>
-        <h3>Perp set‑ups with risk</h3>
-        <p>Directional & mean‑reversion plays with position sizing and <b>clear invalidation</b>. No moon boy nonsense.</p>
-      </div>
-      <div class="glass feat">
-        <span class="chip">LIVE</span>
-        <h3>Private live sessions</h3>
-        <p>Trading rooms, post‑mortems, and weekly prep. Rewatch recordings at your pace.</p>
-      </div>
-      <div class="glass feat">
-        <span class="chip">24×7</span>
-        <h3>Always‑on updates</h3>
-        <p>Key breaks, invalidations, and targets pushed instantly to Telegram. You decide when to act.</p>
-      </div>
-      <div class="glass feat">
-        <span class="chip">ALPHA</span>
-        <h3>10×–100× projects</h3>
-        <p>Curated plays with asymmetric upside. Early research, not promises. You keep custody at all times.</p>
-      </div>
-      <div class="glass feat">
-        <span class="chip">TOOLS</span>
-        <h3>Dashboards coming</h3>
-        <p>On‑chain scanners, funding skews, liquidity maps, and a memecoin screener in the roadmap.</p>
-      </div>
+      <div class="glass feat"><span class="chip">SPOT CALLS</span><h3>High-conviction spot entries</h3><p>Macro context + invalidation rules + target ladders. Clean levels you can execute from any exchange.</p></div>
+      <div class="glass feat"><span class="chip">FUTURE CALLS</span><h3>Perp set-ups with risk</h3><p>Directional & mean-reversion plays with position sizing and <b>clear invalidation</b>. No moon boy nonsense.</p></div>
+      <div class="glass feat"><span class="chip">LIVE</span><h3>Private live sessions</h3><p>Trading rooms, post-mortems, and weekly prep. Rewatch recordings at your pace.</p></div>
+      <div class="glass feat"><span class="chip">24×7</span><h3>Always-on updates</h3><p>Key breaks, invalidations, and targets pushed instantly to Telegram. You decide when to act.</p></div>
+      <div class="glass feat"><span class="chip">ALPHA</span><h3>10×–100× projects</h3><p>Curated plays with asymmetric upside. Early research, not promises. You keep custody at all times.</p></div>
+      <div class="glass feat"><span class="chip">TOOLS</span><h3>Dashboards coming</h3><p>On-chain scanners, funding skews, liquidity maps, and a memecoin screener in the roadmap.</p></div>
     </div>
   </section>
 
-  <!-- SUCCESS SHOWCASE -->
+  <!-- WINS -->
   <section id="success">
     <div class="section-title"><div class="bar"></div><h2>Recent Wins (examples)</h2></div>
     <div class="gallery">
-      <div class="glass case">
-        <div class="img-cover"></div>
-        <div class="row"><span class="tag">SOL Perp</span><span class="right tag">Risk 0.8R</span></div>
-        <h4>Breakout retest to $210</h4>
-        <div class="row"><div class="roi" style="color:var(--success)">+38%</div><span class="tag">TP hit ×3</span></div>
-        <div class="xs muted mt8">Entry 188 · SL 182 · TP 198/204/210</div>
-      </div>
-      <div class="glass case">
-        <div class="img-cover"></div>
-        <div class="row"><span class="tag">BTC Spot</span><span class="right tag">Swing</span></div>
-        <h4>Range reclaim</h4>
-        <div class="row"><div class="roi" style="color:var(--success)">+12%</div><span class="tag">3 weeks</span></div>
-        <div class="xs muted mt8">Entry 58.4k · SL 56.2k · TP 62/65/69k</div>
-      </div>
-      <div class="glass case">
-        <div class="img-cover"></div>
-        <div class="row"><span class="tag">ALT Basket</span><span class="right tag">Spot</span></div>
-        <h4>Rotational push</h4>
-        <div class="row"><div class="roi" style="color:var(--success)">+54%</div><span class="tag">L7D</span></div>
-        <div class="xs muted mt8">ARB/SUI/ENA — Tracked by members</div>
-      </div>
+      <div class="glass case"><div class="row"><span class="tag">SOL Perp</span><span class="right tag">Risk 0.8R</span></div><h4>Breakout retest to $210</h4><div class="row"><div class="roi" style="color:var(--success)">+38%</div><span class="tag">TP hit ×3</span></div><div class="xs muted mt8">Entry 188 · SL 182 · TP 198/204/210</div></div>
+      <div class="glass case"><div class="row"><span class="tag">BTC Spot</span><span class="right tag">Swing</span></div><h4>Range reclaim</h4><div class="row"><div class="roi" style="color:var(--success)">+12%</div><span class="tag">3 weeks</span></div><div class="xs muted mt8">Entry 58.4k · SL 56.2k · TP 62/65/69k</div></div>
+      <div class="glass case"><div class="row"><span class="tag">ALT Basket</span><span class="right tag">Spot</span></div><h4>Rotational push</h4><div class="row"><div class="roi" style="color:var(--success)">+54%</div><span class="tag">L7D</span></div><div class="xs muted mt8">ARB/SUI/ENA — Tracked by members</div></div>
     </div>
-    <div class="xs muted mt8">Data is community‑reported for illustration; past performance is not indicative of future results.</div>
+    <div class="xs muted mt8">Data is community-reported for illustration; past performance is not indicative of future results.</div>
   </section>
 
   <!-- PRICING -->
-  <section id="pricing" class="section-alt">
+  <section id="pricing">
     <div class="section-title"><div class="bar"></div><h2>Membership</h2></div>
     <div class="pricing">
-      <div class="glass price-card">
-        <div class="shine"></div>
-        <h3>Free Signals</h3>
-        <div class="muted">Telegram broadcast channel</div>
-        <div class="price">$0</div>
+      <div class="glass price-card"><div class="shine"></div><h3>Free Signals</h3><div class="muted">Telegram broadcast channel</div><div class="price">$0</div>
         <ul>
           <li>✅ Select <b>Spot</b> & market notes</li>
           <li>✅ Occasional <b>Futures</b> levels</li>
           <li>✅ Community chat access</li>
           <li>— Live sessions (replays limited)</li>
         </ul>
-        <div class="mt16"><a class="btn btn-ghost telegram" href="https://t.me/trendex_free" target="_blank" rel="noopener">Join Free on Telegram</a></div>
+        <div class="mt16"><a class="btn btn-ghost" href="https://t.me/trendexcryptocalls" target="_blank" rel="noopener">Join Free on Telegram</a></div>
       </div>
-      <div class="glass price-card" style="border:1px solid rgba(255,211,0,.35); box-shadow:0 20px 40px rgba(255,211,0,.08)">
-        <div class="shine"></div>
+      <div class="glass price-card" style="border:1px solid rgba(255,211,0,.35); box-shadow:0 20px 40px rgba(255,211,0,.08)"><div class="shine"></div>
         <h3>Premium</h3>
-        <div class="muted">Full access & private room</div>
-        <div class="price">From $49/mo <span class="xs muted">or</span> 30% performance fee*</div>
+        <div class="muted">Performance-fee only</div>
+        <div class="price">30% Performance Fee*</div>
         <ul>
           <li>🚀 All <b>Spot & Futures</b> calls with risk</li>
           <li>🎥 <b>Private live sessions</b> + replays</li>
           <li>🧭 24×7 updates, invalidations, targets</li>
           <li>🧠 Research dumps & 10×–100× project notes</li>
         </ul>
-        <div class="mt16 row">
-          <a class="btn btn-primary right telegram" href="https://t.me/trendex_premium" target="_blank" rel="noopener">Apply via Telegram</a>
-        </div>
-        <div class="xs muted mt8">*Optional honor‑based model — you keep custody; no binding contract.</div>
+        <div class="mt16 row"><a class="btn btn-primary right" href="https://t.me/trendexcryptocalls" target="_blank" rel="noopener">Apply via Telegram</a></div>
+        <div class="xs muted mt8">*Honor-based model — you keep custody; no binding contract.</div>
       </div>
     </div>
   </section>
 
-  <!-- roadmap removed -->
-
   <!-- FAQ -->
   <section id="faq">
     <div class="section-title"><div class="bar"></div><h2>FAQ & Terms</h2></div>
-    <details open>
-      <summary>Do you take custody of client funds?</summary>
-      <div class="muted mt8">No. You keep your funds in your own accounts/wallets. We deliver signals and education; you decide whether to execute.</div>
-    </details>
-    <details>
-      <summary>Is this financial advice?</summary>
-      <div class="muted mt8">No. Educational research & trade ideas only. Markets involve risk — never trade more than you can afford to lose.</div>
-    </details>
-    <details>
-      <summary>How does the performance fee work?</summary>
-      <div class="muted mt8">For eligible clients we offer an optional honor‑based model: you share <b>30% of profits</b> you attribute to our signals, paid in USDT/crypto. No legal contract; you remain in control.</div>
-    </details>
-    <details>
-      <summary>Where do I join?</summary>
-      <div class="mt8">
-        <a class="btn btn-ghost telegram" href="https://t.me/trendex_free" target="_blank" rel="noopener">Free Channel</a>
-        <a class="btn btn-primary telegram" href="https://t.me/trendex_premium" target="_blank" rel="noopener">Apply for Premium</a>
-      </div>
-    </details>
+    <details open><summary>Do you take custody of client funds?</summary><div class="muted mt8">No. You keep your funds in your own accounts/wallets. We deliver signals and education; you decide whether to execute.</div></details>
+    <details><summary>Is this financial advice?</summary><div class="muted mt8">No. Educational research & trade ideas only. Markets involve risk — never trade more than you can afford to lose.</div></details>
+    <details><summary>How does the performance fee work?</summary><div class="muted mt8">Our premium plan is <b>performance-fee only</b>: you share <b>30% of profits</b> you attribute to our signals, paid in USDT/crypto. Honor-based; you keep custody.</div></details>
+    <details><summary>Where do I join?</summary><div class="mt8"><a class="btn btn-ghost" href="https://t.me/trendexcryptocalls" target="_blank" rel="noopener">Free Channel</a> <a class="btn btn-primary" href="https://t.me/trendexcryptocalls" target="_blank" rel="noopener">Apply for Premium</a></div></details>
   </section>
 
   <!-- FOOTER -->
   <footer>
     <div class="footer-grid">
-      <div class="glass" style="padding:20px">
-        <div class="row">
-          <div class="logo-badge">T</div>
-          <div style="font-family:'Chakra Petch'; font-weight:800; font-size:1.2rem">Trend<span style="color:var(--accent)">ex</span></div>
-        </div>
+      <div class="glass" style="padding:20px"><div class="row"><div class="logo-badge">T</div><div style="font-family:'Chakra Petch'; font-weight:800; font-size:1.2rem">Trend<span style="color:var(--accent)">ex</span></div></div>
         <p class="muted mt8">Signals, research, and community built for traders who value risk first. Reach out via Telegram for collaborations.</p>
-        <div class="mt16 row">
-          <a class="btn btn-ghost telegram" href="https://t.me/trendex_free" target="_blank" rel="noopener">@trendex_free</a>
-          <a class="btn btn-primary telegram" href="https://t.me/trendex_premium" target="_blank" rel="noopener">@trendex_premium</a>
-        </div>
+        <div class="mt16 row"><a class="btn btn-ghost" href="https://t.me/trendexcryptocalls" target="_blank" rel="noopener">@trendexcryptocalls</a><a class="btn btn-primary" href="https://t.me/trendexcryptocalls" target="_blank" rel="noopener">Open Channel</a></div>
       </div>
-      <div class="glass" style="padding:20px">
-        <h4>Contact</h4>
-        <div class="muted">Telegram DMs preferred. Or email: <a href="mailto:hello@trendex.example" style="color:var(--text)">hello@trendex.example</a></div>
-        <div class="mt16 xs muted">© <span id="year"></span> Trendex. All rights reserved.</div>
-      </div>
-      <div class="glass" style="padding:20px">
-        <h4>Disclaimers</h4>
-        <div class="xs muted">Trading involves risk. Past performance does not guarantee future results. Educational content only. We are not a legal entity and do not offer regulated financial services.</div>
-      </div>
+      <div class="glass" style="padding:20px"><h4>Contact</h4><div class="muted">Telegram DMs preferred. Or email: <a href="mailto:trendexsignals@gmail.com" style="color:var(--text)">trendexsignals@gmail.com</a></div><div class="mt16 xs muted">© <span id="year"></span> Trendex. All rights reserved.</div></div>
+      <div class="glass" style="padding:20px"><h4>Disclaimers</h4><div class="xs muted">Trading involves risk. Past performance does not guarantee future results. Educational content only. We are not a legal entity and do not offer regulated financial services.</div></div>
     </div>
     <div class="copyright xs">Made with ⚡ by Trendex — Stay sharp.</div>
   </footer>
 
-  <!-- Mobile sticky CTA -->
-  <div class="mobile-cta">
-    <div class="wrap">
-      <a class="btn btn-ghost telegram" href="https://t.me/trendex_free" target="_blank" rel="noopener">Free Channel</a>
-      <a class="btn btn-primary telegram" href="https://t.me/trendex_premium" target="_blank" rel="noopener">Premium</a>
-    </div>
-  </div>
-
 <script>
-// ===== Year
+// Year
 const byear = document.getElementById('year'); if (byear) byear.textContent = new Date().getFullYear();
 
-// ===== Canvas Particles (constellation)
+// BG particles (constellation)
 (function(){
-  const c = document.getElementById('bg-canvas');
-  const ctx = c.getContext('2d');
-  let w, h, dpr, particles = [];
-  const COUNT = 120;
-  function resize(){ dpr = Math.min(2, window.devicePixelRatio || 1); w = c.width = innerWidth * dpr; h = c.height = innerHeight * dpr; c.style.width = innerWidth+'px'; c.style.height = innerHeight+'px'; }
-  function rand(a,b){ return a + Math.random()*(b-a) }
-  function init(){ particles = []; for(let i=0;i<COUNT;i++){ particles.push({ x:rand(0,w), y:rand(0,h), vx:rand(-.15,.15), vy:rand(-.15,.15), r:rand(1,2.5) }); } }
-  function step(){ ctx.clearRect(0,0,w,h); ctx.globalAlpha = .8; for(const p of particles){ p.x+=p.vx; p.y+=p.vy; if(p.x<0||p.x>w) p.vx*=-1; if(p.y<0||p.y>h) p.vy*=-1; ctx.beginPath(); ctx.fillStyle = 'rgba(255,255,255,.08)'; ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill(); }
-    // lines
-    for(let i=0;i<particles.length;i++){
-      for(let j=i+1;j<particles.length;j++){
-        const a=particles[i], b=particles[j];
-        const dx=a.x-b.x, dy=a.y-b.y, dist=Math.hypot(dx,dy);
-        if(dist<160*dpr){ ctx.strokeStyle = 'rgba(0,255,209,'+(1-dist/(160*dpr))*0.15+')'; ctx.lineWidth = 1*dpr; ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke(); }
+  const c=document.getElementById('bg-canvas'),x=c.getContext('2d');
+  let w,h,dpr,ps=[]; const N=120;
+  function R(a,b){return a+Math.random()*(b-a)}
+  function size(){dpr=Math.min(2,window.devicePixelRatio||1); w=c.width=innerWidth*dpr; h=c.height=innerHeight*dpr; c.style.width=innerWidth+'px'; c.style.height=innerHeight+'px'}
+  function init(){ps=[]; for(let i=0;i<N;i++) ps.push({x:R(0,w),y:R(0,h),vx:R(-.15,.15),vy:R(-.15,.15),r:R(1,2.5)})}
+  function step(){
+    x.clearRect(0,0,w,h); x.globalAlpha=.8;
+    for(const p of ps){
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.x<0||p.x>w)p.vx*=-1; if(p.y<0||p.y>h)p.vy*=-1;
+      x.beginPath(); x.fillStyle='rgba(255,255,255,.08)'; x.arc(p.x,p.y,p.r,0,Math.PI*2); x.fill();
+    }
+    for(let i=0;i<ps.length;i++){
+      for(let j=i+1;j<ps.length;j++){
+        const a=ps[i], b=ps[j], dx=a.x-b.x, dy=a.y-b.y, d=Math.hypot(dx,dy);
+        if(d<160*dpr){ x.strokeStyle='rgba(0,255,209,'+(1-d/(160*dpr))*0.15+')'; x.lineWidth=1*dpr; x.beginPath(); x.moveTo(a.x,a.y); x.lineTo(b.x,b.y); x.stroke(); }
       }
     }
     requestAnimationFrame(step);
   }
-  resize(); init(); step();
-  addEventListener('resize', ()=>{ resize(); init(); });
+  size(); init(); step();
+  addEventListener('resize',()=>{ size(); init(); });
 })();
 
-// ===== Count-up when visible
-const counters = document.querySelectorAll('[data-count]');
-const io = new IntersectionObserver(entries=>{
-  for(const e of entries){ if(e.isIntersecting){ animateCounter(e.target, parseFloat(e.target.getAttribute('data-count'))); io.unobserve(e.target); } }
+// Counters
+const counters=document.querySelectorAll('[data-count]');
+const io=new IntersectionObserver(es=>{
+  for(const e of es){ if(e.isIntersecting){ animateCounter(e.target, parseFloat(e.target.getAttribute('data-count'))); io.unobserve(e.target); } }
 },{threshold:.5});
-
 counters.forEach(el=>io.observe(el));
-
-function animateCounter(el, target){
-  const isInt = Number.isInteger(target); const duration = 1200 + Math.min(1800, target*0.2);
-  const start = performance.now(); const from = 0;
-  function tick(t){ const p = Math.min(1, (t-start)/duration); const eased = 1 - Math.pow(1-p, 3); const val = from + (target-from)*eased; el.textContent = isInt ? Math.round(val).toLocaleString() : val.toFixed(0); if(p<1) requestAnimationFrame(tick); }
-  requestAnimationFrame(tick);
-}
-
-// ===== Animate change badges
-for(const el of document.querySelectorAll('[data-change]')){
-  const v = el.getAttribute('data-change'); setTimeout(()=>{ el.textContent = v; }, 1200);
-}
-
-// ===== Tilt cards on mouse
-for(const card of document.querySelectorAll('.hover')){
-  card.addEventListener('mousemove', (e)=>{
-    const r = card.getBoundingClientRect();
-    const x = (e.clientX - r.left)/r.width * 2 - 1; // -1..1
-    const y = (e.clientY - r.top)/r.height * 2 - 1;
-    card.style.transform = `perspective(800px) rotateX(${ -y*4 }deg) rotateY(${ x*6 }deg) translateY(-2px)`;
-  });
-  card.addEventListener('mouseleave', ()=>{ card.style.transform = ''; });
-}
-
-// ===== Smooth scroll for internal links
-for(const a of document.querySelectorAll('a[href^="#"]')){
-  a.addEventListener('click', (e)=>{ const id = a.getAttribute('href'); if(id.length>1){ e.preventDefault(); document.querySelector(id).scrollIntoView({behavior:'smooth', block:'start'}); } });
+function animateCounter(el,target){
+  const isInt=Number.isInteger(target);
+  const dur=1200+Math.min(1800,target*0.2);
+  const s=performance.now();
+  function t(n){ const p=Math.min(1,(n-s)/dur); const e=1-Math.pow(1-p,3); const v=(target*e); el.textContent=isInt?Math.round(v).toLocaleString():v.toFixed(0); if(p<1) requestAnimationFrame(t); }
+  requestAnimationFrame(t);
 }
 </script>
 </body>
